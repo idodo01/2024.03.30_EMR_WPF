@@ -1,0 +1,12 @@
+C:\Users\idodo\Documents\Study2_C\EMR\obj\Release\net8.0-windows\EMR.csproj.AssemblyReference.cache
+C:\Users\idodo\Documents\Study2_C\EMR\obj\Release\net8.0-windows\App.baml
+C:\Users\idodo\Documents\Study2_C\EMR\obj\Release\net8.0-windows\Views\Pages\AdministrationPage.g.cs
+C:\Users\idodo\Documents\Study2_C\EMR\obj\Release\net8.0-windows\Views\Pages\DashboardPage.g.cs
+C:\Users\idodo\Documents\Study2_C\EMR\obj\Release\net8.0-windows\Views\Pages\DataPage.g.cs
+C:\Users\idodo\Documents\Study2_C\EMR\obj\Release\net8.0-windows\Views\Pages\SettingsPage.g.cs
+C:\Users\idodo\Documents\Study2_C\EMR\obj\Release\net8.0-windows\Views\Windows\MainWindow.g.cs
+C:\Users\idodo\Documents\Study2_C\EMR\obj\Release\net8.0-windows\App.g.cs
+C:\Users\idodo\Documents\Study2_C\EMR\obj\Release\net8.0-windows\EMR_Content.g.cs
+C:\Users\idodo\Documents\Study2_C\EMR\obj\Release\net8.0-windows\GeneratedInternalTypeHelper.g.cs
+C:\Users\idodo\Documents\Study2_C\EMR\obj\Release\net8.0-windows\EMR_MarkupCompile.cache
+C:\Users\idodo\Documents\Study2_C\EMR\obj\Release\net8.0-windows\EMR_MarkupCompile.lref

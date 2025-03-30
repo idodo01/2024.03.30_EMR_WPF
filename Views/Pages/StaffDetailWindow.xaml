@@ -1,0 +1,32 @@
+﻿<Window x:Class="EMR.Views.Pages.StaffDetailWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:EMR.Views.Pages"
+        mc:Ignorable="d"
+        Title="StaffDetailWindow" Height="450" Width="800">
+    <Grid Margin="10">
+        <StackPanel>
+            <TextBlock Text="Staff Detail" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
+
+            <TextBlock Text="Name:" FontWeight="Bold"/>
+            <TextBlock Text="{Binding Name}" Margin="0,0,0,5"/>
+
+            <TextBlock Text="Department:" FontWeight="Bold"/>
+            <TextBlock Text="{Binding Department}" Margin="0,0,0,5"/>
+
+            <TextBlock Text="Position:" FontWeight="Bold"/>
+            <TextBlock Text="{Binding Position}" Margin="0,0,0,5"/>
+
+            <TextBlock Text="Age:" FontWeight="Bold"/>
+            <TextBlock Text="{Binding Age}" Margin="0,0,0,5"/>
+
+            <TextBlock Text="Email:" FontWeight="Bold"/>
+            <TextBlock Text="{Binding Email}" Margin="0,0,0,5"/>
+
+            <TextBlock Text="Phone:" FontWeight="Bold"/>
+            <TextBlock Text="{Binding Phone}" Margin="0,0,0,5"/>
+        </StackPanel>
+    </Grid>
+</Window>
