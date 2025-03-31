@@ -3,30 +3,36 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:EMR.Views.Pages"
+        xmlns:local="clr-namespace:EMR.Views.Pages" xmlns:pages="clr-namespace:EMR.ViewModels.Pages"
+            d:DataContext="{d:DesignInstance Type=pages:StaffViewModel}"
         mc:Ignorable="d"
-        Title="StaffDetailWindow" Height="450" Width="800">
+        Title="StaffDetailWindow" Height="500" Width="400">
     <Grid Margin="10">
         <StackPanel>
             <TextBlock Text="Staff Detail" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
 
             <TextBlock Text="Name:" FontWeight="Bold"/>
-            <TextBlock Text="{Binding Name}" Margin="0,0,0,5"/>
+            <TextBox Text="{Binding SelectedStaff.Name}" Margin="0,0,0,5" IsReadOnly="True" x:Name="NameTextBox"/>
 
             <TextBlock Text="Department:" FontWeight="Bold"/>
-            <TextBlock Text="{Binding Department}" Margin="0,0,0,5"/>
+            <TextBox Text="{Binding SelectedStaff.Department}" Margin="0,0,0,5" IsReadOnly="True" x:Name="DepartmentTextBox"/>
 
             <TextBlock Text="Position:" FontWeight="Bold"/>
-            <TextBlock Text="{Binding Position}" Margin="0,0,0,5"/>
+            <TextBox Text="{Binding SelectedStaff.Position}" Margin="0,0,0,5" IsReadOnly="True" x:Name="PositionTextBox"/>
 
             <TextBlock Text="Age:" FontWeight="Bold"/>
-            <TextBlock Text="{Binding Age}" Margin="0,0,0,5"/>
+            <TextBox Text="{Binding SelectedStaff.Age}" Margin="0,0,0,5" IsReadOnly="True" x:Name="AgeTextBox"/>
 
             <TextBlock Text="Email:" FontWeight="Bold"/>
-            <TextBlock Text="{Binding Email}" Margin="0,0,0,5"/>
+            <TextBox Text="{Binding SelectedStaff.Email}" Margin="0,0,0,5" IsReadOnly="True" x:Name="EmailTextBox"/>
 
             <TextBlock Text="Phone:" FontWeight="Bold"/>
-            <TextBlock Text="{Binding Phone}" Margin="0,0,0,5"/>
+            <TextBox Text="{Binding SelectedStaff.Phone}" Margin="0,0,0,5" IsReadOnly="True" x:Name="PhoneTextBox"/>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+                <Button Content="Edit" Width="80" Click="EditButton_Click" Margin="5"/>
+                <Button Content="Save" Width="80" Click="SaveButton_Click" Margin="5" IsEnabled="False" x:Name="SaveButton"/>
+            </StackPanel>
         </StackPanel>
     </Grid>
 </Window>

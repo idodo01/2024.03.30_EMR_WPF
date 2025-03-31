@@ -25,7 +25,7 @@
         </Grid.ColumnDefinitions>
 
         <Grid Grid.Column="0" Margin="10">
-            <ListBox ItemsSource="{Binding ViewModel.Staffs}"
+            <ListBox ItemsSource="{Binding Staffs}"
                      SelectedItem="{Binding SelectedStaff, Mode=TwoWay}"
                      SelectionChanged="ListBox_SelectionChanged">
                 <ListBox.ItemTemplate>

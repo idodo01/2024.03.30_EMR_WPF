@@ -1,6 +1,6 @@
 ﻿using System.Windows.Media;
 using EMR.Models;
-using EMR.interfaces;
+using EMR.Interfaces;
 using Wpf.Ui.Controls;
 
 namespace EMR.ViewModels.Pages
@@ -75,7 +75,7 @@ namespace EMR.ViewModels.Pages
         [RelayCommand]
         private void CreateNewData()
         {
-            Patient patient = new Patient();
+            Patient patient = new();
 
             patient.Id = (int)this.SelectedId;
 
@@ -84,11 +84,6 @@ namespace EMR.ViewModels.Pages
             this.database?.Create(patient);
         }
 
-        [RelayCommand]
-        private void ReadAllData()
-        {
-            this.Patients = this.database?.Get();
-        }
 
         #endregion
 
@@ -108,7 +103,7 @@ namespace EMR.ViewModels.Pages
         {
 
             // 비동기로 데이터를 가져오기
-            this.Patients = await Task.Run(() => this.database?.Get());
+            this.Patients = await Task.Run(() => this.database?.GetAsync());
 
             // 가져온 데이터를 가지고 필요한 작업 수행
             if (this.patients != null)

@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using EMR.Models;
 
-namespace EMR.interfaces
+namespace EMR.Interfaces
 {
     public interface IDatabase<T>
     {
-        List<T>? Get();
+        Task<List<T>>? GetAsync();
 
         T? GetDetail(int? id);
 

@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 using EMR.ViewModels.Pages;
 using Wpf.Ui.Controls;
-using EMR.interfaces;
+using EMR.Interfaces;
 using EMR.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,14 +10,16 @@ namespace EMR.Views.Pages
 {
     public partial class StaffPage : INavigableView<StaffViewModel>
     {
-        private readonly IDatabase<Staff> database; 
+        private readonly IDatabase<Staff> _database;  // IDatabase<Staff>를 클래스에 선언
 
         public StaffViewModel ViewModel { get; }
 
-        public StaffPage(StaffViewModel viewModel)
+        // StaffPage 생성자에서 _database를 초기화
+        public StaffPage(IDatabase<Staff> database)
         {
-            ViewModel = viewModel;
-            DataContext = this;
+            _database = database;  // _database 초기화
+            ViewModel = new StaffViewModel(_database);  // ViewModel에 _database 전달
+            DataContext = ViewModel;
 
             InitializeComponent();
         }
@@ -26,8 +28,9 @@ namespace EMR.Views.Pages
         {
             if (e.AddedItems.Count > 0 && e.AddedItems[0] is Staff selectedStaff)
             {
-                // 🟢 새로운 창에서 Staff 상세 정보 표시
-                StaffDetailWindow detailWindow = new StaffDetailWindow(selectedStaff);
+                // 선택된 Staff에 대해 StaffViewModel을 생성하고 전달
+                var staffViewModel = new StaffViewModel(_database, selectedStaff); // 선택된 Staff를 전달
+                StaffDetailWindow detailWindow = new(staffViewModel);
                 detailWindow.Show();
             }
         }
@@ -40,7 +43,7 @@ namespace EMR.Views.Pages
                 .UseNpgsql("Host=localhost;Database=EMRDB;Username=postgres;Password=dntkrlgkxm1!") // DB 연결 문자열
                 .Options;
 
-            EmrdbContext dbContext = new EmrdbContext(options);
+            EmrdbContext dbContext = new(options);
 
             // StaffService 생성 (DB 연결)
             IDatabase<Staff> database = new StaffService(dbContext);
@@ -49,7 +52,7 @@ namespace EMR.Views.Pages
             StaffViewModel viewModel = new StaffViewModel(database);
 
             // CreateStaffWindow에 ViewModel 전달
-            CreateStaffWindow createWindow = new CreateStaffWindow(viewModel);
+            CreateStaffWindow createWindow = new(viewModel);
             createWindow.ShowDialog();  // 모달 창으로 열기 (사용자가 창을 닫을 때까지 다른 작업을 할 수 없음)
         }
     }

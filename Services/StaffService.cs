@@ -4,8 +4,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using EMR.interfaces;
+using EMR.Interfaces;
 using EMR.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace EMR.Services
 {
@@ -44,9 +45,15 @@ namespace EMR.Services
             }
         }
 
-        public List<Staff>? Get()
+    
+        public async Task<List<Staff>> GetAsync()
         {
-            return this._emrdbContext?.Staffs.ToList();
+            if (this._emrdbContext == null)
+            {
+                return new List<Staff>();  // null 방지
+            }
+
+            return await this._emrdbContext.Staffs.ToListAsync();
         }
 
         public Staff? GetDetail(int? id)
@@ -62,11 +69,21 @@ namespace EMR.Services
                 throw new InvalidOperationException();
             }
         }
-
         public void Update(Staff entity)
         {
-            this._emrdbContext?.Staffs.Update(entity);
-            this._emrdbContext?.SaveChanges();
+            var existingStaff = _emrdbContext.Staffs.FirstOrDefault(s => s.Id == entity.Id);
+            if (existingStaff != null)
+            {
+                existingStaff.Name = entity.Name;
+                existingStaff.Department = entity.Department;
+                existingStaff.Position = entity.Position;
+                existingStaff.Age = entity.Age;
+                existingStaff.Email = entity.Email;
+                existingStaff.Phone = entity.Phone;
+
+                _emrdbContext.SaveChanges(); // ✅ 변경사항 저장 필수
+            }
         }
+
     }
 }

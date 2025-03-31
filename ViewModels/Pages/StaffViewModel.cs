@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using EMR.Models;
-using EMR.interfaces;
+using EMR.Interfaces;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Wpf.Ui.Controls;
@@ -15,7 +15,9 @@ namespace EMR.ViewModels.Pages
         #region FIELDS
 
         private bool isInitialized = false;
-        private readonly IDatabase<Staff> database;
+
+        private readonly IDatabase<Staff> _database;
+        private Staff _staff;
 
         #endregion
 
@@ -42,7 +44,7 @@ namespace EMR.ViewModels.Pages
         [ObservableProperty]
         private string? selectedPosition;
 
-        [ObservableProperty] 
+        [ObservableProperty]
         public int? selectedAge;
 
         [ObservableProperty]
@@ -51,14 +53,30 @@ namespace EMR.ViewModels.Pages
         [ObservableProperty]
         private string? selectedPhone;
 
+        [ObservableProperty]
+        private bool isEditing = false;  // 수정 가능 여부
+
         #endregion
 
         #region CONSTRUCTOR
 
+        
+        // 생성자에서 선택된 Staff 객체를 받아 처리
+        public StaffViewModel(IDatabase<Staff> database, Staff staff)
+        {
+            _database = database;
+            _staff = staff;
+            SelectedStaff = staff; // Staff 객체를 SelectedStaff에 할당
+            SelectStaffCommand = new RelayCommand<Staff>(OnSelectStaff);
+            EditStaffCommand = new RelayCommand(OnEditStaff);
+            SaveStaffCommand = new RelayCommand(OnSaveStaff);
+        }
         public StaffViewModel(IDatabase<Staff> database)
         {
-            this.database = database;
+            _database = database;
             SelectStaffCommand = new RelayCommand<Staff>(OnSelectStaff);
+            EditStaffCommand = new RelayCommand(OnEditStaff);
+            SaveStaffCommand = new RelayCommand(OnSaveStaff);
         }
 
         #endregion
@@ -69,35 +87,67 @@ namespace EMR.ViewModels.Pages
         /// "Select" 버튼 클릭 시 실행되는 명령어
         /// </summary>
         public IRelayCommand<Staff> SelectStaffCommand { get; }
-        
+
         private void OnSelectStaff(Staff staff)
         {
             if (staff != null)
             {
                 SelectedStaff = staff;
+                SelectedName = staff.Name;
+                SelectedDepartment = staff.Department;
+                SelectedPosition = staff.Position;
+                SelectedAge = staff.Age;
+                SelectedEmail = staff.Email;
+                SelectedPhone = staff.Phone;
+                IsEditing = false;  // Staff가 선택되면 수정 불가능 상태로 초기화
             }
         }
 
-        [RelayCommand]
-        private void UpdateData()
+        /// <summary>
+        /// 수정 버튼 클릭 시 실행되는 명령어
+        /// </summary>
+        public IRelayCommand EditStaffCommand { get; }
+
+        private void OnEditStaff()
         {
-            var data = this.database?.GetDetail(this.SelectedId);
+            IsEditing = true;  // 수정 가능한 상태로 변경
+        }
 
-            data.Name = this.SelectedName;
+        /// <summary>
+        /// 저장 버튼 클릭 시 실행되는 명령어
+        /// </summary>
+        public IRelayCommand SaveStaffCommand { get; }
 
-            this.database?.Update(data);
+        // OnSaveStaff()에서 Staff 정보 저장
+        public void OnSaveStaff()
+        {
+            var data = _database?.GetDetail(_staff.Id);
+            if (data != null)
+            {
+                data.Name = _staff.Name;
+                data.Department = _staff.Department;
+                data.Position = _staff.Position;
+                data.Age = _staff.Age;
+                data.Email = _staff.Email;
+                data.Phone = _staff.Phone;
+                _database?.Update(data);
+            }
+            else
+            {
+                Debug.WriteLine("ERROR: Staff data not found!");
+            }
         }
 
         [RelayCommand]
         private void DeleteData()
         {
-            this.database?.Delete(this.SelectedId);
+            _database?.Delete(this.SelectedId);
         }
 
         [RelayCommand]
         private void ReadDetailData()
         {
-            var data = this.database?.GetDetail(this.SelectedId);
+            var data = _database?.GetDetail(this.SelectedId);
 
             this.SelectedName = data.Name;
         }
@@ -118,7 +168,7 @@ namespace EMR.ViewModels.Pages
             staff.Email = this.SelectedEmail;
             staff.Phone = this.SelectedPhone;
 
-            if (this.database == null)
+            if (_database == null)
             {
                 Debug.WriteLine("ERROR: this.database is null!");
                 return;
@@ -126,15 +176,10 @@ namespace EMR.ViewModels.Pages
             Debug.WriteLine("this.database is NOT null. Calling Create...");
 
             // 데이터베이스에 Staff 객체 저장
-            this.database?.Create(staff);
+            _database?.Create(staff);
         }
 
 
-        [RelayCommand]
-        private void ReadAllData()
-        {
-            this.Staffs = this.database?.Get();
-        }
 
         #endregion
 
@@ -153,7 +198,7 @@ namespace EMR.ViewModels.Pages
 
         private async Task InitializeViewModelAsync()
         {
-            Staffs = await Task.Run(() => database.Get());
+            Staffs = await Task.Run(() => _database.GetAsync());
             isInitialized = true;
         }
 

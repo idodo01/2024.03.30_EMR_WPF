@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using EMR.interfaces;
+using EMR.Interfaces;
 using EMR.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace EMR.Services
 {
@@ -42,6 +43,17 @@ namespace EMR.Services
         {
             return this._emrdbContext?.Patients.ToList();
         }
+
+        public async Task<List<Patient>> GetAsync()
+        {
+            if (this._emrdbContext == null)
+            {
+                return new List<Patient>();  // null 방지
+            }
+
+            return await this._emrdbContext.Patients.ToListAsync();
+        }
+
 
         public Patient? GetDetail(int? id)
         {

@@ -10,7 +10,7 @@ using EMR.ViewModels.Windows;
 using EMR.Views.Pages;
 using EMR.Views.Windows;
 using Wpf.Ui;
-using EMR.interfaces;
+using EMR.Interfaces;
 using EMR.Models;
 
 namespace EMR
