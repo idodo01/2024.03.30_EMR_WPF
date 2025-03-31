@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,6 +20,11 @@ namespace EMR.Services
 
         public void Create(Staff entity)
         {
+            if (this._emrdbContext != null)
+            {
+                Debug.WriteLine("_emrdbContext, null아님");
+            }
+            
             this._emrdbContext?.Staffs.Add(entity);
             this._emrdbContext?.SaveChanges();
         }

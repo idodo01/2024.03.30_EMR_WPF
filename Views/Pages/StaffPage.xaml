@@ -38,5 +38,9 @@
                 </ListBox.ItemTemplate>
             </ListBox>
         </Grid>
+
+        <Grid Grid.Column="1" Margin="10">
+            <Button Content="Create" Width="100" Height="30" VerticalAlignment="Top" HorizontalAlignment="Left" Click="CreateButton_Click" />
+        </Grid>
     </Grid>
 </Page>

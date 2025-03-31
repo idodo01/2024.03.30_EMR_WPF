@@ -53,7 +53,7 @@ namespace EMR.Views.Pages {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/EMR;V1.0.0.0;component/views/pages/staffdetailwindow.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/EMR;component/views/pages/staffdetailwindow.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\..\..\Views\Pages\StaffDetailWindow.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

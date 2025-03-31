@@ -60,6 +60,8 @@ namespace EMR
                 services.AddSingleton<AdministrationViewModel>();
                 services.AddSingleton<StaffPage>();
                 services.AddSingleton<StaffViewModel>();
+                services.AddSingleton<StaffDetailWindow>();
+                services.AddSingleton<CreateStaffWindow>();
 
 
                 services.AddSingleton<SettingsPage>();

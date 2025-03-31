@@ -7,11 +7,11 @@ public partial class Staff
 {
     public int Id { get; set; }
 
-    public string Name { get; set; } = null!;
+    public string? Name { get; set; }
 
-    public string Department { get; set; } = null!;
+    public string? Department { get; set; }
 
-    public string Position { get; set; } = null!;
+    public string? Position { get; set; }
 
     public string? Userimg { get; set; }
 
