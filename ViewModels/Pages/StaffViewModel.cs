@@ -15,7 +15,6 @@ namespace EMR.ViewModels.Pages
         #region FIELDS
 
         private bool isInitialized = false;
-
         private readonly IDatabase<Staff> _database;
         private Staff _staff;
 
@@ -45,7 +44,7 @@ namespace EMR.ViewModels.Pages
         private string? selectedPosition;
 
         [ObservableProperty]
-        public int? selectedAge;
+        private int? selectedAge;
 
         [ObservableProperty]
         private string? selectedEmail;
@@ -54,82 +53,86 @@ namespace EMR.ViewModels.Pages
         private string? selectedPhone;
 
         [ObservableProperty]
-        private bool isEditing = false;  // 수정 가능 여부
+        private bool isEditing = false; // 수정 가능 여부
 
         #endregion
 
-        #region CONSTRUCTOR
+        #region CONSTRUCTORS
 
-        
-        // 생성자에서 선택된 Staff 객체를 받아 처리
+        /// <summary>
+        /// 특정 직원 데이터를 초기화하는 생성자
+        /// </summary>
         public StaffViewModel(IDatabase<Staff> database, Staff staff)
         {
             _database = database;
             _staff = staff;
-            SelectedStaff = staff; // Staff 객체를 SelectedStaff에 할당
+            InitializeStaffData(staff);
+
             SelectStaffCommand = new RelayCommand<Staff>(OnSelectStaff);
             EditStaffCommand = new RelayCommand(OnEditStaff);
             SaveStaffCommand = new RelayCommand(OnSaveStaff);
+            DeleteDataCommand = new RelayCommand(OnDeleteData);
+            ReadDetailDataCommand = new RelayCommand(OnReadDetailData);
+            CreateNewDataCommand = new RelayCommand(OnCreateNewData);
         }
+
+        /// <summary>
+        /// 기본 생성자 (직원 리스트를 관리할 때 사용)
+        /// </summary>
         public StaffViewModel(IDatabase<Staff> database)
         {
             _database = database;
             SelectStaffCommand = new RelayCommand<Staff>(OnSelectStaff);
             EditStaffCommand = new RelayCommand(OnEditStaff);
             SaveStaffCommand = new RelayCommand(OnSaveStaff);
+            DeleteDataCommand = new RelayCommand(OnDeleteData);
+            ReadDetailDataCommand = new RelayCommand(OnReadDetailData);
+            CreateNewDataCommand = new RelayCommand(OnCreateNewData);
+
+
         }
 
         #endregion
 
         #region COMMANDS
 
-        /// <summary>
-        /// "Select" 버튼 클릭 시 실행되는 명령어
-        /// </summary>
+        /// <summary> 선택된 직원을 업데이트하는 명령 </summary>
         public IRelayCommand<Staff> SelectStaffCommand { get; }
 
         private void OnSelectStaff(Staff staff)
         {
             if (staff != null)
             {
-                SelectedStaff = staff;
-                SelectedName = staff.Name;
-                SelectedDepartment = staff.Department;
-                SelectedPosition = staff.Position;
-                SelectedAge = staff.Age;
-                SelectedEmail = staff.Email;
-                SelectedPhone = staff.Phone;
-                IsEditing = false;  // Staff가 선택되면 수정 불가능 상태로 초기화
+                InitializeStaffData(staff);
+                IsEditing = false; // 초기 상태에서는 편집 비활성화
             }
         }
 
-        /// <summary>
-        /// 수정 버튼 클릭 시 실행되는 명령어
-        /// </summary>
+        /// <summary> 수정 버튼 클릭 시 실행되는 명령어 </summary>
         public IRelayCommand EditStaffCommand { get; }
 
         private void OnEditStaff()
         {
-            IsEditing = true;  // 수정 가능한 상태로 변경
+            IsEditing = true; // 수정 가능 상태 변경
         }
 
-        /// <summary>
-        /// 저장 버튼 클릭 시 실행되는 명령어
-        /// </summary>
+        /// <summary> 저장 버튼 클릭 시 실행되는 명령어 </summary>
         public IRelayCommand SaveStaffCommand { get; }
 
-        // OnSaveStaff()에서 Staff 정보 저장
         public void OnSaveStaff()
         {
-            var data = _database?.GetDetail(_staff.Id);
+            if (SelectedStaff == null) return;
+
+            var data = _database?.GetDetail(SelectedStaff.Id);
             if (data != null)
             {
-                data.Name = _staff.Name;
-                data.Department = _staff.Department;
-                data.Position = _staff.Position;
-                data.Age = _staff.Age;
-                data.Email = _staff.Email;
-                data.Phone = _staff.Phone;
+                data.Name = SelectedName;
+                data.Department = SelectedDepartment;
+                data.Position = SelectedPosition;
+                data.Age = SelectedAge;
+                data.Email = SelectedEmail;
+                data.Phone = SelectedPhone;
+
                 _database?.Update(data);
             }
             else
@@ -138,53 +141,89 @@ namespace EMR.ViewModels.Pages
             }
         }
 
-        [RelayCommand]
-        private void DeleteData()
+        /// <summary> 직원 삭제 명령 </summary>
+        public IRelayCommand DeleteDataCommand { get; }
+
+        private void OnDeleteData()
         {
-            _database?.Delete(this.SelectedId);
+            if (SelectedId.HasValue)
+            {
+                _database?.Delete(SelectedId.Value);
+                RefreshStaffList();
+            }
         }
 
-        [RelayCommand]
-        private void ReadDetailData()
-        {
-            var data = _database?.GetDetail(this.SelectedId);
+        /// <summary> 직원 상세 정보 불러오기 </summary>
+        public IRelayCommand ReadDetailDataCommand { get; }
 
-            this.SelectedName = data.Name;
+        private void OnReadDetailData()
+        {
+            if (SelectedId.HasValue)
+            {
+                var data = _database?.GetDetail(SelectedId.Value);
+                if (data != null)
+                {
+                    SelectedName = data.Name;
+                    SelectedDepartment = data.Department;
+                    SelectedPosition = data.Position;
+                    SelectedAge = data.Age;
+                    SelectedEmail = data.Email;
+                    SelectedPhone = data.Phone;
+                }
+            }
         }
 
-        [RelayCommand]
-        private void CreateNewData()
+        /// <summary> 새로운 직원 추가 명령 </summary>
+        public IRelayCommand CreateNewDataCommand { get; }
+
+        private void OnCreateNewData()
         {
-            // Staff 객체 생성
-            Staff staff = new Staff();
-
-            Debug.WriteLine("CREATE");
-
-            // ViewModel에서 값을 가져와 staff 객체에 할당 (Id는 제외)
-            staff.Name = this.SelectedName;
-            staff.Department = this.SelectedDepartment;
-            staff.Position = this.SelectedPosition;
-            staff.Age = this.SelectedAge;
-            staff.Email = this.SelectedEmail;
-            staff.Phone = this.SelectedPhone;
+            var newStaff = new Staff
+            {
+                Name = SelectedName,
+                Department = SelectedDepartment,
+                Position = SelectedPosition,
+                Age = SelectedAge,
+                Email = SelectedEmail,
+                Phone = SelectedPhone
+            };
 
             if (_database == null)
             {
-                Debug.WriteLine("ERROR: this.database is null!");
+                Debug.WriteLine("ERROR: Database is null!");
                 return;
             }
-            Debug.WriteLine("this.database is NOT null. Calling Create...");
 
-            // 데이터베이스에 Staff 객체 저장
-            _database?.Create(staff);
+            _database.Create(newStaff);
+            RefreshStaffList();
         }
-
-
 
         #endregion
 
-
         #region METHODS
+
+        /// <summary>
+        /// 특정 직원 데이터 초기화
+        /// </summary>
+        private void InitializeStaffData(Staff staff)
+        {
+            SelectedStaff = staff;
+            SelectedId = staff.Id;
+            SelectedName = staff.Name;
+            SelectedDepartment = staff.Department;
+            SelectedPosition = staff.Position;
+            SelectedAge = staff.Age;
+            SelectedEmail = staff.Email;
+            SelectedPhone = staff.Phone;
+        }
+
+        /// <summary>
+        /// 직원 목록 새로고침
+        /// </summary>
+        private async void RefreshStaffList()
+        {
+            Staffs = await _database.GetAsync();
+        }
 
         public void OnNavigatedTo()
         {
@@ -196,11 +235,12 @@ namespace EMR.ViewModels.Pages
         {
         }
 
-        private async Task InitializeViewModelAsync()
+        public async Task InitializeViewModelAsync()
         {
             Staffs = await Task.Run(() => _database.GetAsync());
             isInitialized = true;
         }
+
 
         #endregion
     }

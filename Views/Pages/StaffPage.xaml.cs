@@ -5,55 +5,73 @@ using Wpf.Ui.Controls;
 using EMR.Interfaces;
 using EMR.Services;
 using Microsoft.EntityFrameworkCore;
+using System.Windows.Input;
+
 
 namespace EMR.Views.Pages
 {
     public partial class StaffPage : INavigableView<StaffViewModel>
     {
-        private readonly IDatabase<Staff> _database;  // IDatabase<Staff>를 클래스에 선언
+        private readonly IDatabase<Staff> _database;
 
         public StaffViewModel ViewModel { get; }
 
-        // StaffPage 생성자에서 _database를 초기화
         public StaffPage(IDatabase<Staff> database)
         {
-            _database = database;  // _database 초기화
-            ViewModel = new StaffViewModel(_database);  // ViewModel에 _database 전달
+            _database = database;
+            ViewModel = new StaffViewModel(_database);
             DataContext = ViewModel;
 
             InitializeComponent();
         }
 
-        private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        // 더블 클릭 시 상세 창 열기
+        private void ListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (e.AddedItems.Count > 0 && e.AddedItems[0] is Staff selectedStaff)
+            if (((ListBox)sender).SelectedItem is Staff selectedStaff)
             {
-                // 선택된 Staff에 대해 StaffViewModel을 생성하고 전달
-                var staffViewModel = new StaffViewModel(_database, selectedStaff); // 선택된 Staff를 전달
+                var staffViewModel = new StaffViewModel(_database, selectedStaff);
                 StaffDetailWindow detailWindow = new(staffViewModel);
                 detailWindow.Show();
             }
         }
 
-
-        private void CreateButton_Click(object sender, RoutedEventArgs e)
+        // 선택된 Staff 삭제 버튼
+        private async void DeleteButton_Click(object sender, RoutedEventArgs e)
         {
-            // EmrdbContext 생성 (DB 연결) - UseNpgsql 사용
+            if (ViewModel.SelectedStaff != null)
+            {
+                var result = System.Windows.MessageBox.Show(
+                    $"정말 {ViewModel.SelectedStaff.Name} 직원을 삭제하시겠습니까?",
+                    "삭제 확인", System.Windows.MessageBoxButton.YesNo, MessageBoxImage.Warning
+                );
+
+                if (result == System.Windows.MessageBoxResult.Yes)
+                {
+                    _database.Delete(ViewModel.SelectedStaff.Id);
+                    await ViewModel.InitializeViewModelAsync(); // UI 업데이트
+                }
+            }
+            else
+            {
+                System.Windows.MessageBox.Show("삭제할 직원을 선택하세요.", "알림",System.Windows.MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+
+        private async void CreateButton_Click(object sender, RoutedEventArgs e)
+        {
             var options = new DbContextOptionsBuilder<EmrdbContext>()
-                .UseNpgsql("Host=localhost;Database=EMRDB;Username=postgres;Password=dntkrlgkxm1!") // DB 연결 문자열
+                .UseNpgsql("Host=localhost;Database=EMRDB;Username=postgres;Password=dntkrlgkxm1!")
                 .Options;
 
             EmrdbContext dbContext = new(options);
-
-            // StaffService 생성 (DB 연결)
             IDatabase<Staff> database = new StaffService(dbContext);
-
-            // StaffViewModel 생성 시 database 전달
             StaffViewModel viewModel = new StaffViewModel(database);
 
-            // CreateStaffWindow에 ViewModel 전달
             CreateStaffWindow createWindow = new(viewModel);
-            createWindow.ShowDialog();  // 모달 창으로 열기 (사용자가 창을 닫을 때까지 다른 작업을 할 수 없음)
+            createWindow.ShowDialog();
+
+            await ViewModel.InitializeViewModelAsync(); // UI 업데이트
         }
     }
 }

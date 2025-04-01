@@ -32,11 +32,11 @@ namespace EMR.Services
 
         public void Delete(int? id)
         {
-            var validData = this._emrdbContext?.Patients.FirstOrDefault(c => c.Id == id);
+            var validData = this._emrdbContext?.Staffs.FirstOrDefault(c => c.Id == id);
 
             if (validData != null)
             {
-                this._emrdbContext?.Patients.Remove(validData);
+                this._emrdbContext?.Staffs.Remove(validData);
                 this._emrdbContext?.SaveChanges();
             }
             else

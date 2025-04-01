@@ -27,7 +27,7 @@
         <Grid Grid.Column="0" Margin="10">
             <ListBox ItemsSource="{Binding Staffs}"
                      SelectedItem="{Binding SelectedStaff, Mode=TwoWay}"
-                     SelectionChanged="ListBox_SelectionChanged">
+                     MouseDoubleClick="ListBox_MouseDoubleClick">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel>
@@ -40,7 +40,10 @@
         </Grid>
 
         <Grid Grid.Column="1" Margin="10">
-            <Button Content="Create" Width="100" Height="30" VerticalAlignment="Top" HorizontalAlignment="Left" Click="CreateButton_Click" />
+            <StackPanel>
+                <Button Content="Create" Width="100" Height="30" Click="CreateButton_Click"/>
+                <Button Content="Delete" Width="100" Height="30" Click="DeleteButton_Click" Margin="0,10,0,0"/>
+            </StackPanel>
         </Grid>
     </Grid>
 </Page>
